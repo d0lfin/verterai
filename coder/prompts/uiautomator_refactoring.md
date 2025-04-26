@@ -18,7 +18,3 @@ Transform the entire class according to these rules!
 ### Attention! 
 Return only the source code text!
 Do not use markdown!
-
-### File Path Rules
-- Each generated file must have a path that starts with: `implementation/{{screen_name}}/`
-- Example correct path: `implementation/login/LoginScreenUiAutomatorActions.kt`

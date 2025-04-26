@@ -30,14 +30,8 @@ def launch_agent(record_trace=False):
     else:
         trace = json.loads(get_file_content("data.json"))
 
-    automator = Automator(model)
-    source_code = automator.code(request, trace)
-
-    for code_file in source_code:
-        file_path = "example/app/src/androidTest/java/verterai/example/" + code_file.relative_filepath
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(code_file.source)
+    automator = Automator(model, "example/")
+    automator.code(request, trace)
 
     GradleBuildAgent("example/", model).build_and_fix()
 

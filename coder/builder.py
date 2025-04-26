@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import subprocess
@@ -26,6 +27,9 @@ class AgentState(TypedDict):
 
 
 class GradleBuildAgent:
+
+    _logger = logging.getLogger(__name__)
+
     def __init__(self, project_dir: str, model: BaseChatModel):
         self._project_dir = os.path.abspath(project_dir)
         self._model = model
@@ -170,6 +174,7 @@ class GradleBuildAgent:
             if state["current_error"]:
                 file_path = state["current_error"].get("file", "")
                 error_desc = f"The following error needs to be corrected:\n{json.dumps(state['current_error'], indent=2)}"
+                self._logger.info(error_desc)
                 state["messages"].append(HumanMessage(content=error_desc))
 
                 if file_path:

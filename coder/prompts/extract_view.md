@@ -98,5 +98,5 @@ class LoginAssertions(private val view: LoginView): LoginScreenAssertions {
 * Constructor dependencies follow the rules and are minimized to what's actually needed.
 
 ### File Path Rules
-- Each generated file must have a path that starts with: `implementation/{{screen_name}}/`
-- Example correct path: `implementation/login/LoginScreenUiAutomatorActions.kt`
+- Each generated file must have a path that starts with: `app/src/androidTest/java/{{app/package/name}}/implementation/{{screen_name}}/`
+- Example correct path: `app/src/androidTest/java/{{app/package/name}}/implementation/login/LoginScreenUiAutomatorActions.kt`

@@ -18,7 +18,7 @@ Your task:
 1. Generate a Kotlin implementation of each provided interface using UIAutomator2. 
 2. Implements `ScreensUiAutomator(device): Screens` at ./implementation/ScreensUiAutomator.kt!
 3. For each file, return a JSON object with:
-   - `"filePath"`: where the file should be saved (e.g., `"implementation/login/LoginScreenUiAutomatorActions.kt"`),
+   - `"filePath"`: where the file should be saved (e.g., `"app/src/androidTest/java/{{app/package/name}}/implementation/{{component}}/*Actions/*Assertions.kt"`),
    - `"content"`: the Kotlin code implementing the interface.
 
 ### Constructor Dependency Rules:
@@ -33,16 +33,18 @@ Your task:
   * `UiDevice` (optional)
 
 ### File Path Rules
-- Each generated file must have a path that starts with: `implementation/{{screen_name}}/`
-- Example correct path: `implementation/login/LoginScreenUiAutomatorActions.kt`
+- Each generated file must have a path that starts with: `app/src/androidTest/java/{{app/package/name}}/implementation/{{component}}/`
+- Example correct path: `app/src/androidTest/java/{{app/package/name}}/implementation/{{component}}/*Actions/*Assertions.kt`
 
 ### Files structure:
+Root of all tests files: app/src/androidTest/java/{{app/package/name}}/
 - ./tests/* - ui-tests only use interfaces from dsl/, not directly implementation/
 - ./dsl/* - contains ONLY interfaces for screens actions and assertions, screens and subcomponents an different files
 - ./implementation/{{screenname}}/* - implementation of DSL interfaces by Uiautomator2 UiDevice
 - ./framework/* - implementation selection logic, different screens factories
 
-### Assertions uiautomator implementation example, file `implementation/login/LoginScreenUiAutomatorAssertions.kt`:
+### Assertions uiautomator implementation example
+Located at file `implementation/login/LoginScreenUiAutomatorAssertions.kt`:
 ```kotlin
 class LoginScreenUiAutomatorAssertions(...): LoginScreenAssertions {
     ...
@@ -52,7 +54,8 @@ class LoginScreenUiAutomatorAssertions(...): LoginScreenAssertions {
 }
 ```
 
-### Actions uiautomator implementation example, file `implementation/login/LoginScreenUiAutomatorActions.kt`:
+### Actions uiautomator implementation example
+Located at file `implementation/login/LoginScreenUiAutomatorActions.kt`:
 ```kotlin
 class LoginScreenUiAutomatorActions(
     ...
@@ -85,7 +88,8 @@ class LoginScreenUiAutomatorActions(
 - Uiautomator located at androidx.test.uiautomator.*
 - Do not add to classes anything that is not required for the test scenario
 - Use reliable selectors (`resourceId`, `text`, `description`, etc.) based on provided element xpath!
-- For each interfaces implementation create `implementation/{{componentname}}/` directories
+- For each interfaces implementation create `app/src/androidTest/java/{{app/package/name}}/implementation/{{componentname}}/` directories
 - `device.findObject` may return `None`. To check for the presence of an element, check the result of the call for `None`
-- !!! Implementation files relative filepath MUST started from `implementation/*`!!!
+- !!! Implementation files relative filepath MUST started from `app/src/androidTest/java/{{app/package/name}}/implementation/*`!!!
 - Always try inject *Assertions at *Actions constructor!
+- Each class must be located in a separate file: `*Actions` at `*Actions.kt`, `*Assertions` at `*Assertions.kt`!

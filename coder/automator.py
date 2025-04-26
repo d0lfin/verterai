@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import re
 from collections import defaultdict
 from typing import List, TypedDict
@@ -41,23 +42,26 @@ class Automator:
     _create_implementation_template = get_file_content("./coder/prompts/create_implementation_uiautomator.md")
     _refactoring_template = get_file_content("./coder/prompts/uiautomator_refactoring.md")
 
-    def __init__(self, model: BaseChatModel):
+    def __init__(self, model: BaseChatModel, project_path: str):
         graph_builder = StateGraph(CoderState)
 
         graph_builder.add_node("create_interfaces", self._create_interfaces)
         graph_builder.add_node("create_implementation", self._create_implementation)
         graph_builder.add_node("refactoring", self._refactoring)
         graph_builder.add_node("extract_views", self._extract_views)
+        graph_builder.add_node("save_files", self._save_files)
 
         graph_builder.add_edge(START, "create_interfaces")
         graph_builder.add_edge("create_interfaces", "create_implementation")
         graph_builder.add_conditional_edges("create_implementation", self._refactoring_needed)
         graph_builder.add_conditional_edges("refactoring", self._refactoring_needed)
-        graph_builder.add_edge("extract_views", END)
+        graph_builder.add_edge("extract_views", "save_files")
+        graph_builder.add_edge("save_files", END)
 
         self._graph = graph_builder.compile()
         self._view_extractor = ViewExtractor(model)
         self._model = model
+        self._project_path = project_path
 
     def _create_interfaces(self, state: CoderState) -> CoderState:
         user_actions = [
@@ -118,6 +122,7 @@ User Interactions:
 
     def _refactoring(self, state: CoderState) -> CoderState:
         file = state["implementation"][state["refactoring_index"]]
+        self._logger.info(f"Refactoring: {file.relative_filepath}")
         file.source = self._model.invoke([
             SystemMessage(self._refactoring_template),
             HumanMessage(f"### Source code:\n{file.source}")
@@ -153,7 +158,8 @@ User Interactions:
 
         for component, files in previous_implementation.items():
             if component != "screens_implementation":
-                result = self._view_extractor.extract(files["actions"], files["assertions"],screens_implementation)
+                self._logger.info(f"Extract view: {component}")
+                result = self._view_extractor.extract(files["actions"], files["assertions"], screens_implementation)
                 screens_implementation = result.get("screens_implementation")
                 new_implementation.append(result["actions"])
                 new_implementation.append(result["assertions"])
@@ -162,6 +168,16 @@ User Interactions:
         new_implementation.append(screens_implementation)
 
         state["implementation"] = new_implementation
+        return state
+
+    def _save_files(self, state: CoderState) -> CoderState:
+        files: list[UITestsKotlinFile] = state["interfaces"]
+        files.extend(state["implementation"])
+        for code_file in files:
+            file_path = self._project_path + code_file.relative_filepath
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(code_file.source)
         return state
 
     def code(self, scenario: str, frames: list[ActionFrame]):
@@ -179,6 +195,4 @@ User Interactions:
             "scenario": scenario,
             "actions": actions
         })
-        files: list[UITestsKotlinFile] = result["interfaces"]
-        files.extend(result["implementation"])
-        return files
+        return result

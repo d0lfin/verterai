@@ -22,13 +22,14 @@ and assertions used in the test.
 - Each subcomponent is also an interface that can be called as subComponent {{ ... }}
 - Subcomponent without index is `val` in interface, NOT `fun`
 - Each assert {{ ... }} block defines a nested assertion interface specified for screen.
+- Assertions functions MUST return `Void`, DO NOT RETURN `Boolean`
 - The DSL interface code must not include implementation.
 - Ensure that the DSL test code depends only on these interfaces, not on the implementation.
 - Structure the code for readability and reuse.
 - Tests should not depend on implementations directly
-- Screens and subcomponents at different directories
 
 ### Files structure:
+Root of all tests files: app/src/androidTest/java/{{app/package/name}}/
 - ./dsl/{{screen_name}}/* - contains ONLY interfaces for actions and assertions of screens
 - ./dsl/{{subcomponent_name}}/* - contains ONLY interfaces for actions and assertions of subcomponents
 - ./tests/* - ui-tests only use interfaces from dsl/, not directly implementation/
@@ -82,11 +83,15 @@ object ScreensFactory {{
 ```
 
 ###  ./dsl/Screens.kt
+Contains application ui actions vals and functions for execution before and after test. 
 ```kotlin
 interface Screens {{
     val screenComponent: ScreenActions
     ...
     val anotherScreenComponent: AnotherScreenActions
+    
+    fun onBefore() // must be called at @Test @Before
+    fun onAfter() // must be called at @Test @Before
 }}
 ```
 
@@ -118,7 +123,7 @@ interface ListItemSubcomponentActions {{
 }}
 ```
 
-### Assertions example, file example `dsl/component/ComponentAssertions.kt`:
+### Assertions example, file example `dsl/{{component}}/{{Component}}Assertions.kt`:
 Must contain only functions of type Unit!
 ```kotlin
 interface ComponentAssertions {{
@@ -173,9 +178,17 @@ interface ListActions {{
 ### Attention! 
 Don't write comments in the code! Interface and function names should replace documentation
 Do not add to interfaces anything that is not required for the test scenario
-Generate file with test at ./tests/!
+Each interface must be located in a separate file: `*Actions` at `*Actions.kt`, `*Assertions` at `*Assertions.kt`!
+Generate file with test at ./tests/! (Do not forget about @Before and @After)
 Generate framework/ScreensFactory.kt!
 Generate dsl/Screens.kt!
+
+### About `./dsl/` directory
+1. Directory with a flat hierarchy, contains only first-level directories
+2. All components and subcomponents must located at `./dsl/{{screen|component|subcomponents}}/*.kt`
+3. Do not include subcomponent directory as subdirectory of screen directory!
+4. Screens and subcomponents at different directories
+5. Does not contain directories with subdirectories
 
 
 {format_instructions}
