@@ -174,6 +174,15 @@ interface ListActions {{
 - Root package for screens interfaces determined by packages in resource-id in hierarchy
 - The full Kotlin code of all required DSL interfaces, organized by screen.
 - Use proper Kotlin syntax and code formatting.
+- If you use `*Actions` or `*Assertions` from subcomponent package add `import ...*Actions` or `import ...*Assertions`
+
+### About `./dsl/` directory
+1. `./dsl/` - is a directory with a flat hierarchy, contains only first-level directories, WITHOUT SECOND-LEVEL DIRECTORIES
+2. All components and subcomponents must located at `./dsl/{{name}}/*.kt`
+3. Do not include subcomponent directory as subdirectory of another directory!
+4. All directories are on the first level of the dsl directory!!!
+5. Screens and subcomponents at different directories
+6. There should be only 2 interfaces in one directory!!! ONE `*Actions.kt` file and ONE `*Assertions.kt` file!
 
 ### Attention! 
 Don't write comments in the code! Interface and function names should replace documentation
@@ -183,12 +192,8 @@ Generate file with test at ./tests/! (Do not forget about @Before and @After)
 Generate framework/ScreensFactory.kt!
 Generate dsl/Screens.kt!
 
-### About `./dsl/` directory
-1. Directory with a flat hierarchy, contains only first-level directories
-2. All components and subcomponents must located at `./dsl/{{screen|component|subcomponents}}/*.kt`
-3. Do not include subcomponent directory as subdirectory of screen directory!
-4. Screens and subcomponents at different directories
-5. Does not contain directories with subdirectories
+!!! DO NOT CREATE `./dsl/{{component}}/{{subcomponent}}/*.kt`!!! Create instead `./dsl/{{componentsubcomponent}}/*.kt` !!!
 
+!!! ADD IMPORTS FOR EACH USAGE OF `*Actions` or `*Assertions` !!!
 
 {format_instructions}

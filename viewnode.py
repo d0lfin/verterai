@@ -27,7 +27,8 @@ def parse_node(xml_node) -> ViewNode:
     if node_children:
         node["children"] = []
         for child in node_children:
-            node["children"].append(parse_node(child))
+            if child.attrib.get("visible-to-user") == "true":
+                node["children"].append(parse_node(child))
 
     return node
 

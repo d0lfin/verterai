@@ -64,6 +64,7 @@ class Automator:
         self._project_path = project_path
 
     def _create_interfaces(self, state: CoderState) -> CoderState:
+        self._logger.info("Writing interfaces...")
         user_actions = [
             {k: v for k, v in action.items() if k != "element_xpath"} for action in state["actions"]
         ]
@@ -74,11 +75,12 @@ class Automator:
         })
         response = self._model.invoke(request)
 
-        self._logger.info(f"Write interfaces: {response.usage_metadata}")
+        self._logger.info(f"Interfaces ready: {response.usage_metadata}")
         state["interfaces"] = self._parser.parse(response.text()).kotlin_files
         return state
 
     def _create_implementation(self, state: CoderState) -> CoderState:
+        self._logger.info("Writing implementation...")
         prompt_template = ChatPromptTemplate.from_messages([
             SystemMessage(self._create_implementation_template),
             HumanMessagePromptTemplate.from_template("""
@@ -109,7 +111,7 @@ User Interactions:
         })
         response = self._model.invoke(request)
 
-        self._logger.info(f"Write implementation: {response.usage_metadata}")
+        self._logger.info(f"Implementation ready: {response.usage_metadata}")
         state["implementation"] = self._parser.parse(response.text()).kotlin_files
         state["refactoring_index"] = 0
         return state

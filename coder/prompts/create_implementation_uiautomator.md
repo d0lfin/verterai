@@ -80,16 +80,21 @@ class LoginScreenUiAutomatorActions(
 }
 ```
 
+## How search elements
+- For ui objects the nullable `UiObject2?` class should be used!
+- To search for objects by selector use `BySelector`
+- Do not use `UiObject`
+- Use reliable selectors (`resourceId`, `text`, `description`, etc.) based on provided element xpath!
+- `device.findObject` may return `None`. To check for the presence of an element, check the result of the call for `None`
+
 ## Attention! 
 - Don't write comments in the code! Interface and function names should replace documentation.
-- For ui objects the nullable `UiObject2?` class should be used!
-- To search for objects by selector use `BySelector` constructors!
-- Do not use `UiObject` and `UiSelector`
 - Uiautomator located at androidx.test.uiautomator.*
 - Do not add to classes anything that is not required for the test scenario
-- Use reliable selectors (`resourceId`, `text`, `description`, etc.) based on provided element xpath!
 - For each interfaces implementation create `app/src/androidTest/java/{{app/package/name}}/implementation/{{componentname}}/` directories
-- `device.findObject` may return `None`. To check for the presence of an element, check the result of the call for `None`
 - !!! Implementation files relative filepath MUST started from `app/src/androidTest/java/{{app/package/name}}/implementation/*`!!!
 - Always try inject *Assertions at *Actions constructor!
 - Each class must be located in a separate file: `*Actions` at `*Actions.kt`, `*Assertions` at `*Assertions.kt`!
+
+- !!! DONT USE `androidx.test.uiautomator.By` !!!
+- !!! DONT USE `UiSelector` !!!

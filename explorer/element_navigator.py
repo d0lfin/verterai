@@ -50,6 +50,7 @@ class ElementNavigator:
         name="xpath",
         description="Extract the short XPath for the target element from the hierarchy. "
                     "First of all try to search by id or description!!! "
+                    "Find deepest view in hierarchy!!! "
                     "The XPath should be abstract and universal, and **should not depend on the specific data** "
                     "being displayed (names, dates, exchange rates, prices, specific weather, etc.)!!!"
     )

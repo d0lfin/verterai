@@ -36,24 +36,6 @@ class GradleBuildAgent:
         self.graph = self._create_graph()
 
     def _create_tools(self):
-        @tool
-        def run_gradle_compile() -> str:
-            """
-            Runs './gradlew compileDebugAndroidTestKotlin' in the specified project directory
-            and returns the output of the command. Use this tool to run the build
-            and get information about compilation errors.
-            """
-            try:
-                os.chdir(self._project_dir)
-                result = subprocess.run(
-                    ["./gradlew", "compileDebugAndroidTestKotlin"],
-                    capture_output=True,
-                    text=True,
-                    timeout=300  # 5 минут на выполнение
-                )
-                return result.stdout + "\n" + result.stderr
-            except Exception as e:
-                return str(e)
 
         @tool
         def read_file(file_path: str) -> str:
@@ -102,7 +84,7 @@ class GradleBuildAgent:
             except Exception as e:
                 str(e)
 
-        return [run_gradle_compile, read_file, write_file, list_files]
+        return [read_file, write_file, list_files]
 
     def _create_graph(self) -> CompiledStateGraph:
         tools = self._create_tools()
@@ -215,7 +197,7 @@ class GradleBuildAgent:
         workflow.add_edge(START, "run_build")
         workflow.add_conditional_edges("run_build", analyze_and_decide)
         workflow.add_conditional_edges("fix_errors",
-                                       lambda state: "tools" if state["messages"][-1].tool_calls else END)
+                                       lambda state: "tools" if state["messages"][-1].tool_calls else "run_build")
         workflow.add_edge("tools", "fix_errors")
 
         return workflow.compile()
